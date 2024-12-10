@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
-df=pd.read_csv("Telco_collected_dataset2.csv")
+df=pd.read_csv("Telco_collected_dataset(FAR).csv")
 df.drop(columns=['Churn1'], inplace=True)
 df.drop(columns=['Churn'], inplace=True)
 x=df.drop("Churn2",axis=1)
