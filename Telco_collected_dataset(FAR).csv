@@ -1,4 +1,4 @@
-﻿Gender,Age,Tenure,ServiceProvider,DataPlan,StreamTV ,StreamMovies,TypeofPlan,PaymentMethod,MonthlyCharges,Churn1,Churn,Churn2
+Gender,Age,Tenure,ServiceProvider,DataPlan,StreamTV,StreamMovies,TypeofPlan,PaymentMethod,MonthlyCharges,Churn1,Churn,Churn2
 Male,20,More than 2 Years,Airtel,4G,No,No,Pre-Paid,UPI,219,Yes,No,0
 Male,19,1 Year,Airtel,5G,Yes,Yes,Post-Paid,Internet Banking,1200,Yes,No,0
 Female,20,1 Year,Airtel,5G,Yes,Yes,Pre-Paid,UPI,399,Yes,No,0
