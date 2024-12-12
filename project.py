@@ -7,10 +7,40 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 
+# Generate dynamic remarks based on the prediction
+def generate_remark(prediction, user_data, telco_data):
+    if prediction == 1:  # Churn
+        if user_data['Tenure'] in ['Less than 1 Year', '1 Year']:
+            tenure_remark = "The short tenure indicates potential dissatisfaction or early-stage disengagement."
+        else:
+            tenure_remark = "Despite a longer tenure, there might be specific concerns leading to churn."
+
+        high_charges_remark = "High monthly charges could be a factor. Consider providing cost-effective solutions." \
+            if user_data['MonthlyCharges'] > telco_data['MonthlyCharges'].mean() else ""
+
+        return f"""
+        ### Remark
+        The customer is likely to churn. {tenure_remark} {high_charges_remark}
+        Consider addressing concerns related to service quality, pricing, or engagement to retain them.
+        """
+    else:  # No Churn
+        loyal_remark = "The customer's longer tenure suggests satisfaction with services." \
+            if user_data['Tenure'] in ['More than 2 Years', '2 Years'] else ""
+
+        optimal_plan_remark = "Their current plan and charges seem to meet their needs effectively." \
+            if user_data['MonthlyCharges'] <= telco_data['MonthlyCharges'].mean() else ""
+
+        return f"""
+        ### Remark
+        The customer is unlikely to churn. {loyal_remark} {optimal_plan_remark}
+        Maintain engagement through loyalty rewards and consistent service quality.
+        """
+
 # Initialize session state for navigation
 if "show_remark" not in st.session_state:
     st.session_state.show_remark = False
     st.session_state.prediction = None
+    st.session_state.user_data = None
 
 # Load the dataset
 df = pd.read_csv("Telco_collected_dataset.csv")
@@ -107,29 +137,25 @@ if not st.session_state.show_remark:
     if res:
         prediction = clf.predict(user_transformed)[0]
         st.session_state.prediction = prediction
+        st.session_state.user_data = new_input
         st.session_state.show_remark = True
 
 # Remark Page (Results and Remarks)
 else:
     st.title("Prediction Result")
     prediction = st.session_state.prediction
-    churn_status = "Yes" if prediction == 1 else "No"
+    user_data = st.session_state.user_data
+
+    # Generate dynamic remark
+    remark = generate_remark(prediction, user_data, df)
 
     # Display prediction result
+    churn_status = "Yes" if prediction == 1 else "No"
     st.subheader("Churn Prediction")
     st.write(churn_status)
 
-    # Display conditional remark
-    if prediction == 1:
-        st.markdown("""
-        ### Remark
-        The customer is likely to churn. Consider reviewing their concerns and providing tailored support to improve retention.
-        """)
-    else:
-        st.markdown("""
-        ### Remark
-        The customer is unlikely to churn. Keep up the good engagement and maintain their satisfaction.
-        """)
+    # Display generated remark
+    st.markdown(remark)
 
     # Button to go back to the main page
     if st.button("Go Back"):
